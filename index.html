@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>Code for NoVa Home</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js" charset="utf-8"></script>
+  <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <!-- <link rel="icon" type="image/png" href="images/favicon.png"> -->
+<style>
+  .header{
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    background-color: #495F74;
+    color: white;
+    height: 40px;
+    box-shadow: 0px 0px 10px gray;
+    z-index: 100;
+  }
+  .header a{
+    font-size: 1.4em;
+    text-decoration: none;
+    color: white;
+    margin: 10px 5px;
+    text-shadow: 0px 0px 5px black;
+    cursor: pointer;
+  }
+  .header a:hover{
+    text-shadow: 0px 0px 5px white;
+    color: orangered;
+  }
+  .dataBlock{
+    border-top: solid 1px gray;
+    margin: 5px;
+  }
+  .dataName{
+    font-weight: 600;
+  }
+  .eventBlock .fa{
+    width: 15px;
+    text-align: center;
+  }
+  .projectBlock .fa{
+    font-size: 1.2em;
+    text-decoration: none;
+    margin: 0px 4px;
+  }
+  .googleMapLink{ text-decoration: none; }
+
+  .projectBlock
+</style>
+<script type="text/javascript">
+
+var projects = [
+  {
+    name: "National Science Foundation & NoVA Business Patent Tracker",
+    code: "https://github.com/sarl-hackerspace/NSFPatents",
+    home: "http://nsfpatent.codefornova.org/",
+    status: "In development"
+  },
+  {
+    name: "CKAN - Alexandria Quality of Life Indicator",
+    code: "https://github.com/sarl-hackerspace/aqoli",
+    home: "http://ckan.codefornova.org/",
+    status: "In development"
+  },
+  {
+    name: "Alexandria Plays - Playground Mapping Web app",
+    code: "https://github.com/sarl-hackerspace/projectplay-server",
+    home: "http://www.alexandriaplays.org/",
+    status: "In production"
+  }
+];
+
+function foo(dataHere){
+  var DOM_events = d3.select("#eventHolder").selectAll(".eventBlock").data(dataHere.data)
+    .enter()
+      .append("div").attr("class","eventBlock dataBlock");
+
+  DOM_events.append("a").attr("class","dataName")
+    .attr("target","_blank")
+    .attr("href", function(d){ return d.link; })
+    .html(function(d){ return d.name; });
+
+  //DOM_events.append("span").attr('class','fa fa-info').attr("title",function(d){ return d.description});
+
+  DOM_events.append("div").attr("class","eventTime")
+    .html(function(d){
+      var m=moment(d.time);
+      var m_end = moment(d.time+d.duration);
+      return "<i class='fa fa-clock-o'></i> "+m.fromNow() + 
+        " ("+m.format("dddd, MMMM Do YYYY, h:mm a")+" - "+m_end.format("h:mm a")+")";
+    });
+
+  DOM_events.append("div").attr("class","eventVenue")
+    .html(function(d){
+      if(d.venue) 
+        return "<i class='fa fa-map-marker'></i> "+ d.venue.name + 
+          " <a href='http://maps.google.com/?q="+d.venue.lat+","+d.venue.lon+
+          "' target='_blank' class='fa fa-map googleMapLink'></a>";
+    });
+}
+
+$(document).ready( function(){
+  $.ajax( 
+    "https://api.meetup.com/Code-for-NoVA/events?&sign=true&photo-host=public&page=20&callback=foo",
+    { method: "GET",
+      dataType: "jsonp",
+      jsonp: "callback",
+      async: true,
+//      headers: {Authorization: "token "+kshf.githubToken},
+      success: function(response){ 
+      }
+    }
+  );
+
+  var DOM_projects = d3.select("#projectHolder").selectAll("projectBlock").data(projects)  
+    .enter().append("div").attr("class","projectBlock dataBlock");
+
+  DOM_projects.append("span").html(function(d){ return d.name; })
+  DOM_projects.append("a")
+    .attr("target","_blank")
+    .attr("class","fa fa-home")
+    .attr("href",function(d){ return d.home;}).text("");
+  DOM_projects.append("a")
+    .attr("target","_blank")
+    .attr("class","fa fa-github")
+    .attr("href",function(d){ return d.code; }).text("");
+
+});
+
+</script>
+</head>
+<body>
+
+<div class='header'>
+  <div class="container">
+    <div class="row">
+      <div class="ten column" style='text-align: right;'>
+        <a target='_blank' href='https://github.com/sarl-hackerspace' class='fa fa-github'></a>
+        <a target='_blank' href='https://groups.google.com/forum/#!forum/nova-brigade' class='fa fa-group'></a>
+        <!--<a target='_blank' href='https://github.com/sarl-hackerspace'>
+          <img src='images/meetup.jpeg' style='max-height: 1em;'>
+          </a>-->
+        <a target='_blank' href='https://twitter.com/codenovabrigade' class='fa fa-twitter'></a>
+        <a target='_blank' href='http://code4novabrigade.tumblr.com/' class='fa fa-tumblr'></a>
+        </div>
+    </div>
+    </div>
+
+  </div> <!-- header -->
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="container">
+    <div class="row">
+      <div class="ten column" style="margin-top: 70px;">
+        <img src='images/codefornova.svg' style='height:150px; float: right;'>
+        <h1><b>Code For NoVa</b></h1>
+
+        <!-- https://github.com/flocela/novalogo -->
+        <p>Come join developers, designers, data geeks, leaders, and idea-makers who volunteer to help Arlington County, Alexandria City, and Fairfax County governments and civic orgs adopt open web technologies.</p>
+
+        <p>We are a <a href='http://brigade.codeforamerica.org/' target='_blank'>Code for America Brigade</a>, which means we're volunteers that contribute our talents toward improving the way our local governments and community organizations use the web. Brigade is about action and you're here because you are someone who takes action.
+        <a href='http://brigade.codeforamerica.org/pages/activities' target='_blank'>See what kind of things brigades do</a>, or watch the inspirational 
+        <a href='http://codeforamerica.org/2012/03/08/jennifer-pahlka-at-ted-video/' target='_blank'>TED talk given by Jennifer Pahlka, the founder of Code for America</a>.</p>
+
+        </div>
+      </div>
+    <div class="row">
+      <div class="seven columns">
+        <h4>Events of
+          <a href='http://www.meetup.com/Code-for-NoVA' target='_blank' style='text-decoration: none;'>
+            Code for Nova <img src='images/meetup.jpeg' style='max-height: 1.2em;'> </a>
+          </h4>
+        <div id='eventHolder'></div>
+        </div>
+      <div class="five columns">
+        <h4>Projects</h4>
+        <div id='projectHolder'></div>
+
+        <br>
+        <h4>Forum</h4>
+
+        Can't make it to a meetup? No problem. We collaborate on projects, ask for help, and post wins to our 
+        <a href='https://groups.google.com/forum/#!forum/nova-brigade' target='_blank'>Code for NoVA forum</a> where you can get new posts in email and reply. We welcome anyone to sign-up... you might just see something you're interested in helping with..<br>
+
+        <br>
+        <h4>Captains</h4>
+        Our Brigade Captains are :<br>
+        <b>Michelle </b>
+        (<a href='mailto:michelle@codeforamerica.org' target='_blank'>michelle@codeforamerica.org</a> 
+          / <a href='https://twitter.com/michellekoeth' target='_blank'>@michellekoeth</a>), and <br>
+        <b>Nina </b>
+        (<a href='mailto:nbaliga@codeforamerica.org' target='_blank'>nbaliga@codeforamerica.org</a> / 
+          <a href='https://twitter.com/nbaliga1' target='_blank'>@nbaliga1</a>).<br><br>
+        We want to hear from you!
+        </div>
+
+    </div>
+    <div class="row">
+      <div class="twelve column" style='text-align: center; background-color: #F4F4F4; padding-top: 10px; margin-top: 10px;'>
+      <a href='https://www.codeforamerica.org/' target='_blank'><img src='images/cfa-logo-color.png'></a>
+        </div>
+      </div>
+  </div>
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>
